@@ -1,5 +1,6 @@
 ﻿using HospitalManagementSystem.Model;
 using HospitalManagementSystem.Services.AppoinmentServices;
+using HospitalManagementSystem.Services.Consultaion;
 using HospitalManagementSystem.Services.DoctorService;
 using HospitalManagementSystem.Services.PatientService;
 using HospitalManagementSystem.Services.TokenManager;
@@ -19,15 +20,16 @@ namespace HospitalManagementSystem.Controllers
         private readonly IJWTTokenManager _configuration;
         private readonly IAppoinmentService _appoinmentService;
         private readonly IDoctorService _doctorService;
+        private readonly IConsultaionService _consultationService;
 
-
-        public PatientsController(IPatientService patientService, IDoctorService doctorService, IJWTTokenManager configuration, IAppoinmentService appoinmentService)
+        public PatientsController(IPatientService patientService, IDoctorService doctorService, IConsultaionService consultaionService, IJWTTokenManager configuration, IAppoinmentService appoinmentService)
         {
 
             _patientService = patientService;
             _configuration = configuration;
             _appoinmentService = appoinmentService;
             _doctorService = doctorService;
+            _consultationService = consultaionService;
         }
 
         [HttpPost]
@@ -61,6 +63,7 @@ namespace HospitalManagementSystem.Controllers
         // GET: api/Patients
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Patient")]
         public async Task<List<Patient>> GetPatients()
         {
             return await _patientService.GetAllAsync();
@@ -68,6 +71,7 @@ namespace HospitalManagementSystem.Controllers
 
         // GET: api/Patients/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Patient")]
         public async Task<ActionResult<Patient>> GetPatient(int id)
         {
             var patient = await _patientService.GetByIdAsync(id);
@@ -80,6 +84,7 @@ namespace HospitalManagementSystem.Controllers
 
         // PUT: api/Patients/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> PutPatient(int id, Patient patient)
         {
             if (id != patient.Id)
@@ -95,6 +100,7 @@ namespace HospitalManagementSystem.Controllers
 
         // POST: api/Patients
         [HttpPost]
+        [Authorize(Roles = "Patient")]
         public async Task<ActionResult<Patient>> PostPatient(Patient patient)
         {
             if (patient != null)
@@ -129,52 +135,86 @@ namespace HospitalManagementSystem.Controllers
 
         // DELETE: api/Patients/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Patient")]
         public Task<string> DeletePatient(int id)
         {
             return _patientService.DeleteById(id);
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Patient")]
         [Route("BookAppoinment")]
         public async Task<IActionResult> BookAppointment(Appoinment appoinment)
         {
             var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var patient = _patientService.getUserFromToken(token).Result;
-            appoinment.PatientId = patient.Id;
-            if (appoinment.AppointmentDate == null)
-                appoinment.AppointmentDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-            var doctor = _doctorService.GetByIdAsync(appoinment.DoctorId).Result;
-            if (doctor == null)
+            if (patient != null)
             {
-                return NotFound($"The doctor with id {appoinment.DoctorId} is not found");
-            }
-            else if (doctor.specialityName != appoinment.specialityName)
-            {
-                return NotFound("Doctor specified is not from the same speciality");
+                appoinment.PatientId = patient.Id;
+                if (appoinment.AppointmentDate == null)
+                    appoinment.AppointmentDate = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+                var doctor = _doctorService.GetByIdAsync(appoinment.DoctorId).Result;
+                if (doctor == null)
+                {
+                    return NotFound($"The doctor with id {appoinment.DoctorId} is not found");
+                }
+                else if (doctor.specialityName != appoinment.specialityName)
+                {
+                    return NotFound("Doctor specified is not from the same speciality");
+                }
+                else
+                {
+                    await _appoinmentService.CreateAsync(appoinment);
+                    return Ok("Appoinment allotted");
+                }
             }
             else
             {
-                await _appoinmentService.CreateAsync(appoinment);
-                return Ok("Appoinment allotted");
+                return BadRequest("Not Logged in");
             }
         }
         [HttpGet]
+        [Authorize(Roles = "Admin,Patient")]
         [Route("BookedAppoinments")]
         public List<Appoinment?> ActiveAppoinments()
         {
             var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
             var patinet = _patientService.getUserFromToken(token).Result;
-            List<Appoinment> appointment = _appoinmentService.GetAppoinmentByPatientId(patinet.Id);
-            List<Appoinment> activeAppoinments = new List<Appoinment>();
-            foreach (Appoinment appointmentItem in appointment)
+            if (patinet != null)
             {
-                if (DateTime.Compare(DateTime.Parse(appointmentItem.AppointmentDate), DateTime.Now) > 0)
+                List<Appoinment> appointment = _appoinmentService.GetAppoinmentByPatientId(patinet.Id);
+                List<Appoinment> activeAppoinments = new List<Appoinment>();
+                foreach (Appoinment appointmentItem in appointment)
                 {
-                    activeAppoinments.Add(appointmentItem);
+                    if (DateTime.Compare(DateTime.Parse(appointmentItem.AppointmentDate), DateTime.Now) > 0)
+                    {
+                        activeAppoinments.Add(appointmentItem);
+                    }
                 }
+                return activeAppoinments;
             }
-            return activeAppoinments;
+            else
+            {
+                return null;
+            }
         }
+        [HttpGet]
+        [Route("ConsultationInfo")]
+        public Consultation? GetConsultationInfo()
+        {
+            var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var patinet = _patientService.getUserFromToken(token).Result;
+            if (patinet != null)
+            {
+                List<Consultation> consultations = _consultationService.GetConsultationByPatientId(patinet.Id);
+                var latestConsultation = consultations.FirstOrDefault();
+                return latestConsultation;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
     }
 }

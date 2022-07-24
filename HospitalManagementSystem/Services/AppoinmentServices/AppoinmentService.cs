@@ -81,7 +81,6 @@ namespace HospitalManagementSystem.Services.AppoinmentServices
             {
                 return null;
             }
-            var date = DateTime.Now.Date;
             return appoinment;
         }
         public List<Appoinment> GetAppoinmentByPatientId(int id)
@@ -99,7 +98,7 @@ namespace HospitalManagementSystem.Services.AppoinmentServices
             {
                 return null;
             }
-            var date = DateTime.Now.Date;
+           
             return appoinment;
         }
     }

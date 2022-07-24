@@ -13,19 +13,28 @@
 
 //        public AppoinmentServiceTests()
 //        {
-//            _sut = new AppoinmentService(Dbmock.Object,loggerMock.Object);
+//            _sut = new AppoinmentService(Dbmock.Object, loggerMock.Object);
 //        }
 
 //        public async void rep()
 //        {
 
 
-//            Doctor doctor = new Doctor { Id = 0, FirstName = "Ram", LastName = "kumar", Address = "Chennai", Age = 34,
-//                EmailId = "ramkumar@doctor.com", Gender = "Male", Password = "Password@123", speciality = "Pediatrician",
-//                Role = "Doctor" };
+//            Doctor doctor = new Doctor
+//            {
+//                Id = 0,
+//                FirstName = "Ram",
+//                LastName = "kumar",
+//                Address = "Chennai",
+//                Age = 34,
+//                EmailId = "ramkumar@doctor.com",
+//                Gender = "Male",
+//                Password = "Password@123",
+//                specialityName = "Pediatrician",
+//                Role = "Doctor"
+//            };
 
-//           Dbmock.Setup(m => m.Get
-
+//            Doctor? actualDoctor = await _sut.GetByIdAsync(doctor.Id);
 //        }
 //    }
 //}

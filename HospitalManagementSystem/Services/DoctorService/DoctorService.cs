@@ -18,7 +18,7 @@ namespace HospitalManagementSystem.Services.DoctorService
 
         public async Task<List<Doctor>> GetAllAsync()
         {
-            if(_context.Doctors == null)
+            if (_context.Doctors == null)
             {
                 return null;
             }
@@ -114,9 +114,12 @@ namespace HospitalManagementSystem.Services.DoctorService
             var jsonToken = handler.ReadToken(token);
             var tokenS = jsonToken as JwtSecurityToken;
             var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
-            return await GetByEmailIdAsync(email);
+            var doctor = await GetByEmailIdAsync(email);
+            return doctor;
         }
     }
-        
-    }
+}
+
+
+
 
