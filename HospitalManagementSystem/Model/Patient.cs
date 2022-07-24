@@ -22,7 +22,7 @@ namespace HospitalManagementSystem.Model
         [Required]
         public int Weight { get; set; }
         public string BloodType { get; set; }
-        public List<Ailments>? DiseasesHistory { get; set; }
+        public string? DiseasesHistory { get; set; }
         public int? DoctorId { get; set; }
         public string? Role { get; set; } = "Patient";
     }

@@ -1,15 +1,16 @@
 ﻿using HospitalManagementSystem.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace HospitalManagementSystem.Services.DoctorService
 {
-    public class DoctorService : IDoctorService
+    public class DoctorController : IDoctorService
     {
         private readonly AppDbContext _context;
-        private readonly ILogger<DoctorService> _logger;
+        private readonly ILogger<DoctorController> _logger;
 
-        public DoctorService(AppDbContext context, ILogger<DoctorService> logger)
+        public DoctorController(AppDbContext context, ILogger<DoctorController> logger)
         {
             _context = context;
             _logger = logger;
@@ -99,15 +100,21 @@ namespace HospitalManagementSystem.Services.DoctorService
 
 
                 await _context.SaveChangesAsync();
-
             }
             else
             {
                 _logger.LogInformation($"No user found with the id {id}");
-                
             }
 
             _logger.LogInformation("User updated successfully");
+        }
+        public async Task<Doctor> getUserFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token);
+            var tokenS = jsonToken as JwtSecurityToken;
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            return await GetByEmailIdAsync(email);
         }
     }
         

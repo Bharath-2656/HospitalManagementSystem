@@ -15,6 +15,8 @@ namespace HospitalManagementSystem.Model
 
         public DbSet<Appoinment> Appoinments { get; set; }
 
+        public DbSet<Admin> Admins { get; set; }
+
     }
 }
 

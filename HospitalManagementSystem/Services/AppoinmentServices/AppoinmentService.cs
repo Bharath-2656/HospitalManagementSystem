@@ -1,10 +1,11 @@
 ﻿using HospitalManagementSystem.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
-namespace HospitalManagementSystem.Services.AppoinmentService
+namespace HospitalManagementSystem.Services.AppoinmentServices
 {
-    public class AppoinmentService: IAppoinmentService
+    public class AppoinmentService : IAppoinmentService
     {
         private readonly AppDbContext _context;
         private readonly ILogger<AppoinmentService> _logger;
@@ -64,6 +65,42 @@ namespace HospitalManagementSystem.Services.AppoinmentService
             _context.Appoinments.Remove(appoinment);
             await _context.SaveChangesAsync();
             return "User deleted";
+        }
+        public List<Appoinment> GetAppoinmentByDoctorId(int id)
+        {
+            if (_context.Appoinments == null)
+            {
+                return null;
+            }
+            var appoinment =_context.Appoinments.FromSqlRaw("SELECT * FROM hospital.appoinments")
+                .Where(m=> m.DoctorId == id)
+                .OrderByDescending(b => b.AppointmentDate)
+                .ToList();
+
+            if (appoinment == null)
+            {
+                return null;
+            }
+            var date = DateTime.Now.Date;
+            return appoinment;
+        }
+        public List<Appoinment> GetAppoinmentByPatientId(int id)
+        {
+            if (_context.Appoinments == null)
+            {
+                return null;
+            }
+            var appoinment = _context.Appoinments.FromSqlRaw("SELECT * FROM hospital.appoinments")
+                .Where(m => m.PatientId == id)
+                .OrderByDescending(b => b.AppointmentDate)
+                .ToList();
+
+            if (appoinment == null)
+            {
+                return null;
+            }
+            var date = DateTime.Now.Date;
+            return appoinment;
         }
     }
 }

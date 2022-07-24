@@ -21,7 +21,7 @@ namespace HospitalManagementSystem.Model
         [Required]
         public string Gender { get; set; }
         [Required]
-        public Speciality speciality { get; set; }
+        public string specialityName { get; set; }
         public string Role { get; set; } = "Doctor";
     }
 }

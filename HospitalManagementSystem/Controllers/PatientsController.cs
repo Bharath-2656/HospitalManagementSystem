@@ -1,5 +1,5 @@
 ﻿using HospitalManagementSystem.Model;
-using HospitalManagementSystem.Services.AppoinmentService;
+using HospitalManagementSystem.Services.AppoinmentServices;
 using HospitalManagementSystem.Services.DoctorService;
 using HospitalManagementSystem.Services.PatientService;
 using HospitalManagementSystem.Services.TokenManager;
@@ -19,6 +19,7 @@ namespace HospitalManagementSystem.Controllers
         private readonly IJWTTokenManager _configuration;
         private readonly IAppoinmentService _appoinmentService;
         private readonly IDoctorService _doctorService;
+
 
         public PatientsController(IPatientService patientService, IDoctorService doctorService, IJWTTokenManager configuration, IAppoinmentService appoinmentService)
         {
@@ -148,17 +149,32 @@ namespace HospitalManagementSystem.Controllers
             {
                 return NotFound($"The doctor with id {appoinment.DoctorId} is not found");
             }
-            else if (doctor.Value.speciality != appoinment.speciality)
+            else if (doctor.specialityName != appoinment.specialityName)
             {
                 return NotFound("Doctor specified is not from the same speciality");
             }
             else
             {
-
                 await _appoinmentService.CreateAsync(appoinment);
                 return Ok("Appoinment allotted");
             }
         }
-
+        [HttpGet]
+        [Route("BookedAppoinments")]
+        public List<Appoinment?> ActiveAppoinments()
+        {
+            var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var patinet = _patientService.getUserFromToken(token).Result;
+            List<Appoinment> appointment = _appoinmentService.GetAppoinmentByPatientId(patinet.Id);
+            List<Appoinment> activeAppoinments = new List<Appoinment>();
+            foreach (Appoinment appointmentItem in appointment)
+            {
+                if (DateTime.Compare(DateTime.Parse(appointmentItem.AppointmentDate), DateTime.Now) > 0)
+                {
+                    activeAppoinments.Add(appointmentItem);
+                }
+            }
+            return activeAppoinments;
+        }
     }
 }

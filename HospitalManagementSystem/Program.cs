@@ -1,5 +1,6 @@
 using HospitalManagementSystem.Model;
-using HospitalManagementSystem.Services.AppoinmentService;
+using HospitalManagementSystem.Services.AdminServices;
+using HospitalManagementSystem.Services.AppoinmentServices;
 using HospitalManagementSystem.Services.DoctorService;
 using HospitalManagementSystem.Services.PatientService;
 using HospitalManagementSystem.Services.TokenManager;
@@ -12,10 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IDoctorService, DoctorController>();
 builder.Services.AddScoped<IAppoinmentService, AppoinmentService>();
-
-
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IJWTTokenManager, JWTTokenManager>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>

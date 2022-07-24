@@ -1,9 +1,12 @@
 ﻿using HospitalManagementSystem.Model;
+using HospitalManagementSystem.Services.AppoinmentServices;
 using HospitalManagementSystem.Services.DoctorService;
 using HospitalManagementSystem.Services.TokenManager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace HospitalManagementSystem.Controllers
 {
@@ -12,14 +15,18 @@ namespace HospitalManagementSystem.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
+        private readonly IAppoinmentService _appoinmentSerivce;
         private readonly IJWTTokenManager _configuration;
 
-        public DoctorsController(IJWTTokenManager congiguration, IDoctorService doctorService)
+        public DoctorsController(IJWTTokenManager congiguration, IDoctorService doctorService, IAppoinmentService appoinmentService)
         {
 
             _configuration = congiguration;
             _doctorService = doctorService;
+            _appoinmentSerivce = appoinmentService;
+
         }
+       
 
         [HttpPost]
         [Route("login")]
@@ -58,7 +65,7 @@ namespace HospitalManagementSystem.Controllers
 
         // GET: api/Doctors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Doctor>> GetDoctor(int id)
+        public async Task<Doctor> GetDoctor(int id)
         {
             return await _doctorService.GetByIdAsync(id);
         }
@@ -67,28 +74,6 @@ namespace HospitalManagementSystem.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDoctor(int id, Doctor doctor)
         {
-            //if (id != doctor.Id)
-            //{
-            //    return BadRequest();
-            //}
-
-            //_context.Entry(doctor).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!DoctorExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
             _doctorService.UpdateAsync(doctor);
             return NoContent();
         }
@@ -141,7 +126,22 @@ namespace HospitalManagementSystem.Controllers
             return await _doctorService.DeleteById(id);
         }
 
-
-
+        [HttpGet]
+        [Route("ActiveAppoiments")]
+        public List<Appoinment?> ActiveAppoinments()
+        {
+            var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            var doctor = _doctorService.getUserFromToken(token).Result;
+            List<Appoinment> appointment = _appoinmentSerivce.GetAppoinmentByDoctorId(doctor.Id);
+            List<Appoinment> activeAppoinments = new List<Appoinment>();
+            foreach (Appoinment appointmentItem in appointment)
+            {
+                if (DateTime.Compare(DateTime.Parse(appointmentItem.AppointmentDate), DateTime.Now) > 0)
+                {
+                    activeAppoinments.Add(appointmentItem);
+                }
+            }
+            return activeAppoinments;
+        }
     }
 }
