@@ -1,17 +1,10 @@
 ﻿using HospitalManagementSystem.Controllers;
 using HospitalManagementSystem.Model;
 using HospitalManagementSystem.Services.AppoinmentServices;
-using HospitalManagementSystem.Services.TokenManager;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HospitalManagementSystem.Services;
-using HospitalManagementSystem.Services.DoctorService;
 using HospitalManagementSystem.Services.Consultaion;
+using HospitalManagementSystem.Services.DoctorService;
+using HospitalManagementSystem.Services.TokenManager;
+using Moq;
 
 namespace HospitalManagementSystemTests.Controller
 {
@@ -27,7 +20,7 @@ namespace HospitalManagementSystemTests.Controller
             _sut = new DoctorsController(jwtTokenMangerMock.Object, Dbmock.Object, appoinmentServiceMock.Object, consultationServiceMock.Object);
         }
         [Fact]
-        public async Task  GetDoctor_Should_Return_Success()
+        public async Task GetDoctor_Should_Return_Success()
         {
             Doctor expected_doctor = new Doctor
             {
@@ -92,6 +85,6 @@ namespace HospitalManagementSystemTests.Controller
 
             Assert.Equal("No details enetered", actualDoctor);
         }
-        
+
     }
 }

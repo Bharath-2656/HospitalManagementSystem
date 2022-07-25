@@ -14,7 +14,7 @@ namespace HospitalManagementSystem.Services.TokenManager
             _configuration = configuration;
         }
 
-        public Tokens Authenticate(string EmailId,string Role)
+        public Tokens Authenticate(string EmailId, string Role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);

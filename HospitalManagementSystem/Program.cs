@@ -27,7 +27,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddAuthentication(
-    options => { options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
     .AddJwtBearer(options =>
@@ -39,10 +41,10 @@ builder.Services.AddAuthentication(
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer= builder.Configuration["JWT:Issuer"],
+            ValidIssuer = builder.Configuration["JWT:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
-        
+
     });
 
 builder.Services.AddControllers();

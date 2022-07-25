@@ -1,5 +1,6 @@
 ﻿using HospitalManagementSystem.Model;
 using HospitalManagementSystem.Services.AdminServices;
+using HospitalManagementSystem.Services.AppoinmentServices;
 using HospitalManagementSystem.Services.TokenManager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,19 +8,19 @@ using System.Text.RegularExpressions;
 
 namespace HospitalManagementSystem.Controllers
 {
+    //api/Admin
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
         private readonly IJWTTokenManager _configuration;
-
-        public AdminController(IAdminService adminService, IJWTTokenManager configuration)
+        private readonly IAppoinmentService _appoinmentService;
+        public AdminController(IAdminService adminService, IJWTTokenManager configuration, IAppoinmentService appoinmentService)
         {
-
             _adminService = adminService;
             _configuration = configuration;
-            
+            _appoinmentService = appoinmentService;
         }
 
         [HttpPost]
@@ -51,6 +52,7 @@ namespace HospitalManagementSystem.Controllers
         }
         [HttpPost]
         [Route("Register")]
+        [AllowAnonymous]
         public async Task<ActionResult<Admin>> Register(Admin admin)
         {
             if (admin != null)
@@ -81,6 +83,17 @@ namespace HospitalManagementSystem.Controllers
                 return BadRequest("No details enetered");
             }
 
+        }
+
+        // GET: GetAppoinmentsInfo
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [Route("GetAppoinmentsInfo")]
+        public List<Appoinment> ActiveAppoinments()
+        {
+            List<Appoinment> appointment = _appoinmentService.GetAllAsync().Result;
+
+            return appointment;
         }
     }
 }

@@ -70,7 +70,7 @@ namespace HospitalManagementSystem.Services.Consultaion
             {
                 return null;
             }
-           
+
             return consultation;
         }
         public List<Consultation> GetConsultationByPatientId(int id)
@@ -88,7 +88,7 @@ namespace HospitalManagementSystem.Services.Consultaion
             {
                 return null;
             }
-           
+
             return consultation;
         }
     }

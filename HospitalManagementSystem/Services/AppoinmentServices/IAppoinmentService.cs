@@ -12,5 +12,5 @@ namespace HospitalManagementSystem.Services.AppoinmentServices
         public List<Appoinment> GetAppoinmentByDoctorId(int id);
         public List<Appoinment> GetAppoinmentByPatientId(int id);
 
-     }
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using HospitalManagementSystem.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace HospitalManagementSystem.Services.AppoinmentServices
 {
@@ -15,7 +14,7 @@ namespace HospitalManagementSystem.Services.AppoinmentServices
             _context = context;
             _logger = logger;
         }
-        public async Task<List<Appoinment>> GetAllAsync()
+        public async Task<List<Appoinment>?> GetAllAsync()
         {
             if (_context.Appoinments == null)
             {
@@ -72,8 +71,8 @@ namespace HospitalManagementSystem.Services.AppoinmentServices
             {
                 return null;
             }
-            var appoinment =_context.Appoinments.FromSqlRaw("SELECT * FROM hospital.appoinments")
-                .Where(m=> m.DoctorId == id)
+            var appoinment = _context.Appoinments.FromSqlRaw("SELECT * FROM hospital.appoinments")
+                .Where(m => m.DoctorId == id)
                 .OrderByDescending(b => b.AppointmentDate)
                 .ToList();
 
@@ -98,7 +97,7 @@ namespace HospitalManagementSystem.Services.AppoinmentServices
             {
                 return null;
             }
-           
+
             return appoinment;
         }
     }

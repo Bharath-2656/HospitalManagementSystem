@@ -100,7 +100,7 @@ namespace HospitalManagementSystem.Controllers
                     }
                     else
                     {
-                        return ("Incoreect Email or password");
+                        return ("Incorrect Email or password");
                     }
                 }
                 else
@@ -135,7 +135,7 @@ namespace HospitalManagementSystem.Controllers
 
         [HttpGet]
         [Route("ActiveAppoiments")]
-        [Authorize(Roles = "Doctor,Admin")]
+        [Authorize(Roles = "Doctor")]
         public List<Appoinment> ActiveAppoinments()
         {
             var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
@@ -160,6 +160,7 @@ namespace HospitalManagementSystem.Controllers
         }
         [HttpPost]
         [Route("Consultation")]
+        [Authorize(Roles = "Doctor")]
         public Consultation DoctorConsultation(Consultation consultation)
         {
             var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
@@ -177,6 +178,7 @@ namespace HospitalManagementSystem.Controllers
         }
         [HttpGet]
         [Route("ConsultationInfo")]
+        [Authorize(Roles = "Doctor")]
         public Consultation? GetConsultationInfo()
         {
             var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");

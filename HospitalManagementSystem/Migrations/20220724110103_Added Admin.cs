@@ -9,7 +9,7 @@ namespace HospitalManagementSystem.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
+
 
             migrationBuilder.DropTable(
                 name: "Ailments");
@@ -91,7 +91,7 @@ namespace HospitalManagementSystem.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            
+
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_specialityName",
@@ -108,7 +108,7 @@ namespace HospitalManagementSystem.Migrations
                 table: "Ailments",
                 column: "PatientId");
 
-           
+
         }
     }
 }

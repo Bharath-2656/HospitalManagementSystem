@@ -69,7 +69,7 @@ namespace HospitalManagementSystem.Controllers
             return await _patientService.GetAllAsync();
         }
 
-        // GET: api/Patients/5
+        // GET: api/Patients/id
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Patient")]
         public async Task<ActionResult<Patient>> GetPatient(int id)
@@ -82,7 +82,7 @@ namespace HospitalManagementSystem.Controllers
             return patient;
         }
 
-        // PUT: api/Patients/5
+        // PUT: api/Patients/id
         [HttpPut("{id}")]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> PutPatient(int id, Patient patient)
@@ -174,7 +174,7 @@ namespace HospitalManagementSystem.Controllers
             }
         }
         [HttpGet]
-        [Authorize(Roles = "Admin,Patient")]
+        [Authorize(Roles = "Patient")]
         [Route("BookedAppoinments")]
         public List<Appoinment?> ActiveAppoinments()
         {
@@ -200,6 +200,7 @@ namespace HospitalManagementSystem.Controllers
         }
         [HttpGet]
         [Route("ConsultationInfo")]
+        [Authorize(Roles = "Patient")]
         public Consultation? GetConsultationInfo()
         {
             var token = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");

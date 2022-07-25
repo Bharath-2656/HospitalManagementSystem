@@ -1,7 +1,6 @@
 ﻿using HospitalManagementSystem.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace HospitalManagementSystem.Services.PatientService
@@ -38,7 +37,7 @@ namespace HospitalManagementSystem.Services.PatientService
 
             return patient;
         }
-        public async Task<Patient>? GetByEmailIdAsync(string EmailId)
+        public async Task<Patient?> GetByEmailIdAsync(string EmailId)
         {
             if (_context.Patients == null)
             {
@@ -50,7 +49,6 @@ namespace HospitalManagementSystem.Services.PatientService
             {
                 return null;
             }
-
             return patient;
         }
         public async Task<ActionResult<Patient>?> CreateAsync(Patient patient)

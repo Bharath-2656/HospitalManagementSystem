@@ -5,7 +5,7 @@ namespace HospitalManagementSystem.Model
     public class Appoinment
     {
         public int Id { get; set; }
-      
+
         public int PatientId { get; set; }
         public string specialityName { get; set; }
         public int DoctorId { get; set; }
